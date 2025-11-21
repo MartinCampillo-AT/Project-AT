@@ -39,7 +39,7 @@ def download_data(ticker, start_date, end_date, interval='1d'):
     except Exception as e:
         print(f"❌ An error occurred: {e}")
         return pd.DataFrame()
-'''
+
 # This block executes only when running the script directly
 if __name__ == "__main__":
     # Test with Apple (Daily)
@@ -48,5 +48,4 @@ if __name__ == "__main__":
     # Print first rows to verify
     if not df.empty:
         print(df.head())
-'''
-bitcoin = download_data("BTC-USD", "2024-01-01", "2025-06-06", interval="1h")
+

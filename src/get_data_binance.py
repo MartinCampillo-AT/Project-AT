@@ -88,5 +88,4 @@ def get_binance_data(symbol, interval, start_str, end_str):
     return df
 
 if __name__ == "__main__":
-    # TEST: Descargar 3 años de Bitcoin a 1 hora (Imposible en Yahoo)
     get_binance_data("BTCUSDT", "1h", "2020-01-01", "2023-12-31")
