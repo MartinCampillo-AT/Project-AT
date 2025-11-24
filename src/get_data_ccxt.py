@@ -89,7 +89,4 @@ def download_crypto_data(exchange_id, symbol, timeframe, since_str, limit=1000, 
 
 if __name__ == "__main__":
     # Test 1: Binance (The standard)
-    download_crypto_data('binance', 'BTC/USDT', '1h', '2024-01-01', filename='data/btcusdt_1h_2024.csv')
-    
-    # Test 2: Kraken (To prove it works on other exchanges)
-    #download_crypto_data('kraken', 'ETH/USD', '1d', '2023-01-01')
+    download_crypto_data('binance', 'BTC/USDT', '1h', '2018-01-01', filename='data/btcusdt_1h_2018.csv')
