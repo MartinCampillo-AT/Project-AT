@@ -89,4 +89,4 @@ def download_crypto_data(exchange_id, symbol, timeframe, since_str, limit=1000, 
 
 if __name__ == "__main__":
     # Test 1: Binance (The standard)
-    download_crypto_data('binance', 'BTC/USDT', '1h', '2018-01-01', filename='data/btcusdt_1h_2018.csv')
+    download_crypto_data('binance', 'BTC/USDT', '5m', '2018-01-01', filename='data/btcusdt_5m_2018.csv')
