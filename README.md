@@ -6,7 +6,7 @@ This repository documents my journey in building an automated algorithmic tradin
 Currently, the project is in the **infrastructure phase**: building a robust pipeline for data acquisition, cleaning, and backtesting. The specific trading strategies will be developed and selected based on rigorous statistical analysis of historical data.
 
 ## 🛠 Tech Stack
-* **Language:** Python 3.x
+* **Language:** Python 3.13
 * **Data Analysis:** Pandas, NumPy
 * **Visualization:** Matplotlib, Seaborn
 * **Financial Data:** Yahoo Finance API (`yfinance`)
