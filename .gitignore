@@ -2,3 +2,11 @@
 .DS_Store
 __pycache__/
 .ipynb_checkpoints/
+# Ignorar datos pesados
+*.pkl
+*.csv
+*.zip
+
+# Ignorar carpetas de datos
+data/
+eur/usd_data/

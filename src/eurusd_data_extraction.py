@@ -3,38 +3,38 @@ import os
 import glob
 
 # ---------------------------------------------------------
-# CONFIGURACIÓN
+# CONFIGURATION
 # ---------------------------------------------------------
 BASE_PATH = "/Users/martincampillopereda/Desktop/ProjectAT/data"
 COL_NAMES = ['date', 'time', 'open', 'high', 'low', 'close', 'volume']
 
-def cargar_datos_inteligente(base_path):
-    print(f"🔍 Buscando archivos en: {base_path} ...")
+def load_data_smart(base_path):
+    print(f"🔍 Searching for files in: {base_path} ...")
     
-    # 1. BÚSQUEDA RECURSIVA (EL SABUESO)
-    # Buscamos cualquier CSV que empiece por "DAT_MT_EURUSD_M1_" en cualquier subcarpeta
-    # ** significa "cualquier profundidad de carpetas"
+    # 1. RECURSIVE SEARCH (THE BLOODHOUND)
+    # Search for any CSV starting with "DAT_MT_EURUSD_M1_" in any subfolder
+    # ** means "any folder depth"
     search_pattern = os.path.join(base_path, "**", "DAT_MT_EURUSD_M1_*.csv")
     
-    # recursive=True permite buscar dentro de subcarpetas
+    # recursive=True allows searching inside subfolders
     all_files = glob.glob(search_pattern, recursive=True)
     
-    # Ordenamos para que cargue 2011, luego 2012, etc.
+    # Sort to load 2011, then 2012, etc.
     all_files.sort()
     
     if not all_files:
-        print("❌ ERROR CRÍTICO: No se ha encontrado NINGÚN archivo CSV que coincida.")
-        print("   -> Verifica que la carpeta 'data' no esté vacía.")
-        print("   -> Verifica que los archivos empiecen por 'DAT_MT_EURUSD_M1_'")
+        print("❌ CRITICAL ERROR: No matching CSV files found.")
+        print("   -> Check that the 'data' folder is not empty.")
+        print("   -> Check that files start with 'DAT_MT_EURUSD_M1_'")
         return None
 
-    print(f"✅ Se han encontrado {len(all_files)} archivos aptos.")
+    print(f"✅ Found {len(all_files)} suitable files.")
     
-    # Mostramos los primeros y últimos para verificar
-    print("   -> Primero:", os.path.basename(all_files[0]))
-    print("   -> Último: ", os.path.basename(all_files[-1]))
+    # Show first and last to verify
+    print("   -> First:", os.path.basename(all_files[0]))
+    print("   -> Last: ", os.path.basename(all_files[-1]))
     
-    # 2. CARGA Y FUSIÓN
+    # 2. LOADING AND MERGING
     all_dataframes = []
     
     for file_path in all_files:
@@ -42,29 +42,29 @@ def cargar_datos_inteligente(base_path):
         print(f"   Reading: {filename} ...")
         
         try:
-            # HistData usa comas o punto y coma. Probamos coma primero.
+            # HistData uses commas or semicolons. Trying comma first.
             df_temp = pd.read_csv(file_path, names=COL_NAMES, header=None)
             
-            # Verificación rápida de que no estamos leyendo basura
+            # Quick check to ensure we are not reading garbage
             if len(df_temp) < 10:
-                print(f"   ⚠️ Warning: {filename} parece vacío o muy pequeño.")
+                print(f"   ⚠️ Warning: {filename} seems empty or very small.")
             
             all_dataframes.append(df_temp)
             
         except Exception as e:
-            print(f"   ❌ Error leyendo {filename}: {e}")
+            print(f"   ❌ Error reading {filename}: {e}")
 
-    # 3. CONCATENACIÓN FINAL
+    # 3. FINAL CONCATENATION
     if not all_dataframes:
         return None
 
-    print("\nCombinando todo en un DataFrame gigante...")
+    print("\nMerging everything into a giant DataFrame...")
     df_total = pd.concat(all_dataframes, ignore_index=True)
     
-    # 4. LIMPIEZA DE FECHAS
-    print("Convirtiendo fechas (esto tardará unos 30-60 segundos)...")
+    # 4. DATE CLEANING
+    print("Converting dates (this will take about 30-60 seconds)...")
     
-    # Truco de velocidad: Convertir solo si son strings
+    # Speed trick: Convert only if they are strings
     df_total['timestamp'] = pd.to_datetime(
         df_total['date'] + ' ' + df_total['time'], 
         format='%Y.%m.%d %H:%M'
@@ -74,14 +74,14 @@ def cargar_datos_inteligente(base_path):
     df_total.drop(columns=['date', 'time'], inplace=True)
     df_total.sort_index(inplace=True)
     
-    # Quitar duplicados
+    # Remove duplicates
     df_total = df_total[~df_total.index.duplicated(keep='first')]
     
-    print(f"✅ ¡Éxito! Total de minutos cargados: {len(df_total)}")
+    print(f"✅ Success! Total minutes loaded: {len(df_total)}")
     return df_total
 
-def crear_resamples(df_m1):
-    print("\n--- Creando Timeframes (Resampling) ---")
+def create_resamples(df_m1):
+    print("\n--- Creating Timeframes (Resampling) ---")
     
     agg_dict = {
         'open': 'first',
@@ -91,29 +91,29 @@ def crear_resamples(df_m1):
         'volume': 'sum'
     }
     
-    print("Generando 5 Minutos...")
+    print("Generating 5 Minutes...")
     df_5m = df_m1.resample('5min').agg(agg_dict).dropna()
     
-    print("Generando 1 Hora...")
+    print("Generating 1 Hour...")
     df_1h = df_m1.resample('1h').agg(agg_dict).dropna()
     
-    print("Generando Diario...")
+    print("Generating Daily...")
     df_1d = df_m1.resample('1D').agg(agg_dict).dropna()
     
     return df_5m, df_1h, df_1d
 
-# --- EJECUCIÓN ---
-df_master_m1 = cargar_datos_inteligente(BASE_PATH)
+# --- EXECUTION ---
+df_master_m1 = load_data_smart(BASE_PATH)
 
 if df_master_m1 is not None:
-    df_5m, df_1h, df_1d = crear_resamples(df_master_m1)
+    df_5m, df_1h, df_1d = create_resamples(df_master_m1)
     
-    # Guardar
-    print("\nGuardando copias de seguridad (.pkl)...")
+    # Save
+    print("\nSaving backup copies (.pkl)...")
     df_5m.to_pickle("EURUSD_5M.pkl")
     df_1h.to_pickle("EURUSD_1H.pkl")
     df_1d.to_pickle("EURUSD_1D.pkl")
-    print("✅ Todo listo. Archivos guardados.")
+    print("✅ All done. Files saved.")
     
-    print("\nMuestra (1H):")
+    print("\nSample (1H):")
     print(df_1h.tail())
