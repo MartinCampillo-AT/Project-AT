@@ -22,7 +22,6 @@ def download_data(ticker, start_date, end_date, interval='1d', filename=None):
         data = yf.download(ticker, start=start_date, end=end_date, interval=interval, auto_adjust=True)
         data.index.name = 'Date'
         data.columns = ['Open', 'High', 'Low', 'Close', 'Volume']
-        data['Date'] = data['Date'][:-6]
         if data.empty:
             raise ValueError(f"No data found for {ticker} with parameters provided.")
             
